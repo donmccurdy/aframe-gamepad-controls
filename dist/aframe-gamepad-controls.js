@@ -68,7 +68,8 @@
 	 * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
 	 */
 
-	var MAX_DELTA = 0.2;
+	var MAX_DELTA = 0.2,
+	    PI_2 = Math.PI / 2;
 
 	var JOYSTICK_EPS = 0.2;
 
@@ -87,11 +88,12 @@
 	    // Constants
 	    easing:            { default: 20 },
 	    acceleration:      { default: 65 },
+	    sensitivity:       { default: 0.04 },
 	    
 	    // Enable/disable features
 	    enabled:           { default: true },
 	    movementEnabled:   { default: true },
-	    lookEnabled:       { default: false },
+	    lookEnabled:       { default: true },
 	    flyEnabled:        { default: false },
 	    
 	    // Control axes
@@ -113,9 +115,18 @@
 	  init: function () {
 	    var scene = this.el.sceneEl;
 	    this.prevTime = Date.now();
+
+	    // Movement
 	    this.velocity = new THREE.Vector3(0, 0, 0);
 	    this.direction = new THREE.Vector3(0, 0, 0);
 	    this.rotation = new THREE.Euler(0, 0, 0, 'YXZ');
+
+	    // Rotation
+	    this.pitch = new THREE.Object3D();
+	    this.yaw = new THREE.Object3D();
+	    this.yaw.position.y = 10;
+	    this.yaw.add(this.pitch);
+
 	    scene.addBehavior(this);
 	  },
 
@@ -125,6 +136,7 @@
 	   */
 	  update: function (previousData) {
 	    this.updatePosition(!!previousData);
+	    this.updateRotation();
 	  },
 
 	  /**
@@ -201,12 +213,24 @@
 	  },
 
 	  /*******************************************************************
-	  * Heading
+	  * Rotation
 	  */
 	 
-	  updateHeading: function () {
+	  updateRotation: function () {
 	    if (this.data.lookEnabled) {
-	      console.warn('gamepad-controls: Look control not yet implemented.');
+	      var lookVector = this.getJoystick(1);
+	      if (Math.abs(lookVector.x) <= JOYSTICK_EPS) lookVector.x = 0;
+	      if (Math.abs(lookVector.y) <= JOYSTICK_EPS) lookVector.y = 0;
+	      lookVector.multiplyScalar(this.data.sensitivity);
+	      this.yaw.rotation.y -= lookVector.x;
+	      this.pitch.rotation.x -= lookVector.y;
+	      this.pitch.rotation.x = Math.max(-PI_2, Math.min(PI_2, this.pitch.rotation.x));
+
+	      this.el.setAttribute('rotation', {
+	        x: THREE.Math.radToDeg(this.pitch.rotation.x),
+	        y: THREE.Math.radToDeg(this.yaw.rotation.y),
+	        z: 0
+	      });
 	    }
 	  },
 
@@ -273,6 +297,7 @@
 	  }
 
 	};
+
 
 /***/ }
 /******/ ]);
