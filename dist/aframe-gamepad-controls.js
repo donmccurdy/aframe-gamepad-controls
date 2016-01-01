@@ -63,18 +63,22 @@
 
 	/**
 	 * Gamepad controls for A-Frame VR.
+	 *
+	 * For more information about the Gamepad API, see:
+	 * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
 	 */
 
 	var MAX_DELTA = 0.2;
 
-	var JOYSTICK_EPS = 0.2,
-	    JOYSTICK_L_X = 0,
-	    JOYSTICK_L_Y = 1,
-	    JOYSTICK_R_X = 2,
-	    JOYSTICK_R_Y = 3;
+	var JOYSTICK_EPS = 0.2;
 
 	module.exports = {
+
 	  dependencies: ['proxy-controls'],
+
+	  /*******************************************************************
+	  * Schema
+	  */
 
 	  schema: {
 	    // Controller 0-3
@@ -99,6 +103,10 @@
 	    debug:             { default: false }
 	  },
 
+	  /*******************************************************************
+	  * Core
+	  */
+
 	  /**
 	   * Called once when component is attached. Generally for initial setup.
 	   */
@@ -116,6 +124,20 @@
 	   * Generally modifies the entity based on the data.
 	   */
 	  update: function (previousData) {
+	    this.updatePosition(!!previousData);
+	  },
+
+	  /**
+	   * Called when a component is removed (e.g., via removeAttribute).
+	   * Generally undoes all modifications to the entity.
+	   */
+	  remove: function () { },
+
+	  /*******************************************************************
+	  * Movement
+	  */
+
+	  updatePosition: function (reset) {
 	    var data = this.data;
 	    var acceleration = data.acceleration;
 	    var easing = data.easing;
@@ -125,12 +147,12 @@
 	    var rollAxis = data.rollAxis;
 	    var pitchAxis = data.pitchAxis;
 	    var el = this.el;
-	    var gamepad = navigator.getGamepads()[data.controller];
+	    var gamepad = this.getGamepad();
 	    this.prevTime = time;
 
 	    // If data has changed or FPS is too low
 	    // we reset the velocity
-	    if (previousData || delta > MAX_DELTA) {
+	    if (reset || delta > MAX_DELTA) {
 	      velocity[rollAxis] = 0;
 	      velocity[pitchAxis] = 0;
 	      return;
@@ -141,17 +163,12 @@
 
 	    var position = el.getComputedAttribute('position');
 
-	    if (data.enabled && gamepad) {
-	      if (data.movementEnabled) {
-	        if (Math.abs(gamepad.axes[JOYSTICK_L_X]) > JOYSTICK_EPS) {
-	          velocity[pitchAxis] += gamepad.axes[JOYSTICK_L_X] * acceleration * delta;
-	        }
-	        if (Math.abs(gamepad.axes[JOYSTICK_L_Y]) > JOYSTICK_EPS) {
-	          velocity[rollAxis] += gamepad.axes[JOYSTICK_L_Y] * acceleration * delta;
-	        }
+	    if (data.enabled && data.movementEnabled && gamepad) {
+	      if (Math.abs(this.getJoystick(0).x) > JOYSTICK_EPS) {
+	        velocity[pitchAxis] += this.getJoystick(0).x * acceleration * delta;
 	      }
-	      if (data.lookEnabled) {
-	        console.warn('gamepad-controls: Look control not yet implemented.');
+	      if (Math.abs(this.getJoystick(0).y) > JOYSTICK_EPS) {
+	        velocity[rollAxis] += this.getJoystick(0).y * acceleration * delta;
 	      }
 	    }
 
@@ -183,11 +200,78 @@
 	    return this.direction;
 	  },
 
+	  /*******************************************************************
+	  * Heading
+	  */
+	 
+	  updateHeading: function () {
+	    if (this.data.lookEnabled) {
+	      console.warn('gamepad-controls: Look control not yet implemented.');
+	    }
+	  },
+
+	  /*******************************************************************
+	  * Gamepad state
+	  */
+
 	  /**
-	   * Called when a component is removed (e.g., via removeAttribute).
-	   * Generally undoes all modifications to the entity.
+	   * Returns the Gamepad instance attached to the component.
+	   * @return {Gamepad}
 	   */
-	  remove: function () { }
+	  getGamepad: function () {
+	    return navigator.getGamepads()[this.data.controller];
+	  },
+
+	  /**
+	   * Returns the state of the given button.
+	   * @param  {number} index The button (0-N) for which to find state.
+	   * @return {GamepadButton} 
+	   */
+	  getButton: function (index) {
+	    return this.getGamepad().buttons[index];
+	  },
+
+	  /**
+	   * Returns state of the given axis. Axes are labelled 0-N, where 0-1 will
+	   * represent X/Y on the first joystick, and 2-3 X/Y on the second.
+	   * @param  {number} index The axis (0-N) for which to find state.
+	   * @return {number} On the interval [-1,1].
+	   */
+	  getAxis: function (index) {
+	    return this.getGamepad().axes[index];
+	  },
+
+	  /**
+	   * Returns the state of the given joystick (0 or 1) as a THREE.Vector2.
+	   * @param  {number} id The joystick (0, 1) for which to find state.
+	   * @return {THREE.Vector2}
+	   */
+	  getJoystick: function (index) {
+	    var gamepad = this.getGamepad();
+	    switch (index) {
+	      case 0: return new THREE.Vector2(gamepad.axes[0], gamepad.axes[1]);
+	      case 1: return new THREE.Vector2(gamepad.axes[2], gamepad.axes[3]);
+	      default: throw new Error('Unexpected joystick index "%d".', index);
+	    }
+	  },
+
+	  /**
+	   * Returns true if the gamepad is currently connected to the system.
+	   * @return {boolean}
+	   */
+	  isConnected: function () {
+	    return this.getGamepad().connected;
+	  },
+
+	  /**
+	   * Returns a string containing some information about the controller. Result
+	   * may vary across browsers, for a given controller.
+	   * @return {string}
+	   */
+	  getId: function () {
+	    return this.getGamepad().id;
+	  }
+
 	};
 
 /***/ }
