@@ -4,7 +4,7 @@
 
 var MAX_DELTA = 0.2;
 
-var JOYSTICK_EPS = 0.1,
+var JOYSTICK_EPS = 0.2,
     JOYSTICK_L_X = 0,
     JOYSTICK_L_Y = 1,
     JOYSTICK_R_X = 2,
@@ -42,7 +42,7 @@ module.exports = {
   init: function () {
     var scene = this.el.sceneEl;
     this.prevTime = Date.now();
-    this.velocity = new THREE.Vector3();
+    this.velocity = new THREE.Vector3(0, 0, 0);
     this.direction = new THREE.Vector3(0, 0, 0);
     this.rotation = new THREE.Euler(0, 0, 0, 'YXZ');
     scene.addBehavior(this);
@@ -80,11 +80,11 @@ module.exports = {
 
     if (data.enabled && gamepad) {
       if (data.movementEnabled) {
-        if (gamepad.axes[JOYSTICK_L_X] > JOYSTICK_EPS) {
-          velocity[rollAxis] += gamepad.axes[JOYSTICK_L_X] * acceleration * delta;
+        if (Math.abs(gamepad.axes[JOYSTICK_L_X]) > JOYSTICK_EPS) {
+          velocity[pitchAxis] += gamepad.axes[JOYSTICK_L_X] * acceleration * delta;
         }
-        if (gamepad.axes[JOYSTICK_L_Y] > JOYSTICK_EPS) {
-          velocity[pitchAxis] += gamepad.axes[JOYSTICK_L_Y] * acceleration * delta;
+        if (Math.abs(gamepad.axes[JOYSTICK_L_Y]) > JOYSTICK_EPS) {
+          velocity[rollAxis] += gamepad.axes[JOYSTICK_L_Y] * acceleration * delta;
         }
       }
       if (data.lookEnabled) {
