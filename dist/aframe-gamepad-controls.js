@@ -84,23 +84,23 @@
 	  schema: {
 	    // Controller 0-3
 	    controller:        { default: 0, oneOf: [0, 1, 2, 3] },
-	    
-	    // Constants
-	    easing:            { default: 20 },
-	    acceleration:      { default: 65 },
-	    sensitivity:       { default: 0.04 },
-	    
+
 	    // Enable/disable features
 	    enabled:           { default: true },
 	    movementEnabled:   { default: true },
 	    lookEnabled:       { default: true },
 	    flyEnabled:        { default: false },
-	    
+
+	    // Constants
+	    easing:            { default: 20 },
+	    acceleration:      { default: 65 },
+	    sensitivity:       { default: 0.04 },
+
 	    // Control axes
 	    pitchAxis:         { default: 'x', oneOf: [ 'x', 'y', 'z' ] },
 	    yawAxis:           { default: 'y', oneOf: [ 'x', 'y', 'z' ] },
 	    rollAxis:          { default: 'z', oneOf: [ 'x', 'y', 'z' ] },
-	    
+
 	    // Debugging
 	    debug:             { default: false }
 	  },
