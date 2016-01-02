@@ -2,6 +2,8 @@
 
 Gamepad controls for A-Frame VR.
 
+Demo: https://www.donmccurdy.com/aframe-gamepad-controls/
+
 ## Overview
 
 Supports one or more gamepads, attached to an A-Frame scene.
