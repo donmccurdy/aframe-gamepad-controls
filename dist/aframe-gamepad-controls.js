@@ -128,6 +128,13 @@
 	    this.yaw.add(this.pitch);
 
 	    scene.addBehavior(this);
+
+	    if (!this.getGamepad()) {
+	      console.warn(
+	        'Gamepad #%d not found. Connect controller and press any button to continue.',
+	        this.data.controller
+	      );
+	    }
 	  },
 
 	  /**
@@ -217,7 +224,7 @@
 	  */
 	 
 	  updateRotation: function () {
-	    if (this.data.lookEnabled) {
+	    if (this.data.lookEnabled && this.getGamepad()) {
 	      var lookVector = this.getJoystick(1);
 	      if (Math.abs(lookVector.x) <= JOYSTICK_EPS) lookVector.x = 0;
 	      if (Math.abs(lookVector.y) <= JOYSTICK_EPS) lookVector.y = 0;
