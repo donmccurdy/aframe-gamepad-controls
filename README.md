@@ -4,7 +4,7 @@ Gamepad controls for A-Frame VR.
 
 ## Overview
 
-Supports one or more gamepads or game controllers, attached to an A-Frame scene.
+Supports one or more gamepads, attached to an A-Frame scene.
 
 This component uses the HTML5 [Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API). The underlying API supports Firefox, Chrome, Edge, and Opera ([as of 01/2016](http://caniuse.com/#search=gamepad)). Safari and Internet Explorer do not currently support gamepads.
 
@@ -54,8 +54,8 @@ Add markup.
 <a-cube gamepad-controls="lookEnabled: false"></a-cube>
 
 <!-- Two players -->
-<a-model src="player1.dae" gamepad-controls="controller: 0; lookEnabled: false"></a-model>
-<a-model src="player2.dae" gamepad-controls="controller: 1; lookEnabled: false"></a-model>
+<a-model src="player1.obj" gamepad-controls="controller: 0; lookEnabled: false"></a-model>
+<a-model src="player2.obj" gamepad-controls="controller: 1; lookEnabled: false"></a-model>
 ```
 
 ## Options
@@ -66,5 +66,5 @@ controller        | 0       | Which controller (0..3) the object should be attac
 enabled           | true    | Enables/disables all events on this controller.
 movementEnabled   | true    | Enables/disables movement via the left thumbstick.
 lookEnabled       | true    | Enables/disables view rotation via the right thumbstick.
-flyEnabled        | false   | Enables/disable movement off the horizontal plane.
+flyEnabled        | false   | Enables/disables movement off the horizontal plane.
 debug             | false   | Enables/disables debug logging to the console.
