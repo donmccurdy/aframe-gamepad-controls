@@ -58,6 +58,17 @@ Add markup.
 <a-model src="player2.obj" gamepad-controls="controller: 1; lookEnabled: false"></a-model>
 ```
 
+## Development
+
+To edit the component or play with examples, [download the project](https://github.com/donmccurdy/aframe-gamepad-controls/archive/master.zip) and run:
+
+```shell
+npm install
+npm run dev
+```
+
+The demo will run at [http://localhost:8000/](http://localhost:8000/).
+
 ## Button Events
 
 When buttons are pressed on the gamepad, a [GamepadButtonEvent](https://github.com/donmccurdy/aframe-gamepad-controls/blob/master/lib/GamepadButtonEvent.js) is emitted on the element. Components and entities may listen for these events and modify behavior as needed. Example:
