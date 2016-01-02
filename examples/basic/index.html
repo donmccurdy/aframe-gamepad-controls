@@ -1,20 +1,14 @@
 <html>
   <head>
-    <script src="../example.js"></script>
+    <script src="https://aframe.io/releases/latest/aframe.js"></script>
+    <script src="../../bundle.js"></script>
   </head>
   <body>
-    <a-assets></a-assets>
     <a-scene>
-      <!-- Cube -->
       <a-entity geometry="primitive: box"
                 position="0 0 -3"
-                material="color: #4CC3D9">
-      </a-entity>
-
-      <!-- Camera -->
-      <a-entity camera
-                position="0 0.5 0"
-                gamepad-controls
+                material="color: #4CC3D9"
+                gamepad-controls>
       </a-entity>
     </a-scene>
   </body>
