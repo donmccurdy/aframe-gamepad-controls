@@ -7,8 +7,6 @@
     "dev": "budo browser.js:bundle.js --dir examples --port 8000 --live --open",
     "dist": "webpack browser.js dist/aframe-gamepad-controls.js && webpack -p browser.js dist/aframe-gamepad-controls.min.js",
     "postpublish": "npm run dist",
-    "test": "karma start ./tests/karma.conf.js",
-    "preversion": "npm test",
     "version": "npm run dist && git add -A dist",
     "postversion": "git push && git push --tags"
   },
