@@ -63,8 +63,8 @@ Add markup.
 Property          | Default | Description
 ------------------|---------|-------------
 controller        | 0       | Which controller (0..3) the object should be attached to.
-enabled           | true    | Enables/disables all events on this controller.
-movementEnabled   | true    | Enables/disables movement via the left thumbstick.
-lookEnabled       | true    | Enables/disables view rotation via the right thumbstick.
-flyEnabled        | false   | Enables/disables movement off the horizontal plane.
-debug             | false   | Enables/disables debug logging to the console.
+enabled           | true    | Enables all events on this controller.
+movementEnabled   | true    | Enables movement via the left thumbstick.
+lookEnabled       | true    | Enables view rotation via the right thumbstick.
+flyEnabled        | false   | Whether or not movement is restricted to the entity’s initial plane.
+debug             | false   | When true, shows debugging info in the console.
