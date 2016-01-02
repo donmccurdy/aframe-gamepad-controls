@@ -59,7 +59,7 @@
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Gamepad controls for A-Frame VR.
@@ -67,6 +67,8 @@
 	 * For more information about the Gamepad API, see:
 	 * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
 	 */
+
+	var GamepadButtonEvent = __webpack_require__(2);
 
 	var MAX_DELTA = 0.2,
 	    PI_2 = Math.PI / 2;
@@ -127,6 +129,9 @@
 	    this.yaw.position.y = 10;
 	    this.yaw.add(this.pitch);
 
+	    // Button state
+	    this.buttons = {};
+
 	    scene.addBehavior(this);
 
 	    if (!this.getGamepad()) {
@@ -144,6 +149,7 @@
 	  update: function (previousData) {
 	    this.updatePosition(!!previousData);
 	    this.updateRotation();
+	    this.updateButtonState();
 	  },
 
 	  /**
@@ -242,6 +248,41 @@
 	  },
 
 	  /*******************************************************************
+	  * Button events
+	  */
+
+	  updateButtonState: function () {
+	    var gamepad = this.getGamepad();
+	    if (this.data.enabled && gamepad) {
+
+	      // Fire DOM events for button state changes.
+	      for (var i = 0; i < gamepad.buttons.length; i++) {
+	        if (gamepad.buttons[i].pressed && !this.buttons[i]) {
+	          this.emit(new GamepadButtonEvent('gamepadbuttondown', i, gamepad.buttons[i]));
+	        } else if (!gamepad.buttons[i].pressed && this.buttons[i]) {
+	          this.emit(new GamepadButtonEvent('gamepadbuttonup', i, gamepad.buttons[i]));
+	        }
+	        this.buttons[i] = gamepad.buttons[i].pressed;
+	      }
+
+	    } else if (Object.keys(this.buttons)) {
+	      // Reset state if controls are disabled or controller is lost.
+	      this.buttons = {};
+	    }
+	  },
+
+	  emit: function (event) {
+	    // Emit original event.
+	    this.el.emit(event.type, event);
+
+	    // Emit convenience event, identifying button index.
+	    this.el.emit(
+	      event.type + ':' + event.index,
+	      new GamepadButtonEvent(event.type, event.index, event)
+	    );
+	  },
+
+	  /*******************************************************************
 	  * Gamepad state
 	  */
 
@@ -304,6 +345,20 @@
 	  }
 
 	};
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	function GamepadButtonEvent (type, index, details) {
+	  this.type = type;
+	  this.index = index;
+	  this.pressed = details.pressed;
+	  this.value = details.value;
+	}
+
+	module.exports = GamepadButtonEvent;
 
 
 /***/ }

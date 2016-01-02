@@ -7,10 +7,13 @@
     <a-scene>
       <!--
         Camera + Gamepad controls
+        Button 0 is "A" on an Xbox controller.
       -->
       <a-entity camera
                 position="0 1 0"
-                gamepad-controls>
+                gamepad-controls
+                sound="src: assets/321103__nsstudios__blip1.wav;
+                       on: gamepadbuttondown:0">
       </a-entity>
 
       <!--

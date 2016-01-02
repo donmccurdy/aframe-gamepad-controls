@@ -58,6 +58,41 @@ Add markup.
 <a-model src="player2.obj" gamepad-controls="controller: 1; lookEnabled: false"></a-model>
 ```
 
+## Button Events
+
+When buttons are pressed on the gamepad, a [GamepadButtonEvent](https://github.com/donmccurdy/aframe-gamepad-controls/blob/master/lib/GamepadButtonEvent.js) is emitted on the element. Components and entities may listen for these events and modify behavior as needed. Example:
+
+```javascript
+el.addEventListener('gamepadbuttondown', function (e) {
+  console.log('Button "%d" has been pressed.', e.index);
+});
+```
+
+**GamepadButtonEvent:**
+
+Property | Type    | Description
+---------|---------|--------------
+type     | string  | Either `gamepadbuttondown` or `gamepadbuttonup`.
+index    | int     | Index of the button affected, 0..N.
+pressed  | boolean | Whether
+value    | float   | Distance the button was pressed, if applicable. `value` will be 0 or 1 in most cases, but may return a float for trigger-like buttons.
+
+For convenience, additional events are fired including the button index, providing a way to bind events to specific buttons using only markup. For example, to play "pew-pew" sound when `Button 7` is pressed (right trigger on an Xbox controller), you might do the following:
+
+```html
+<a-entity gamepad-controls
+          sound="src: pew-pew.wav;
+                 on: gamepadbuttondown:7">
+</a-entity>
+```
+
+Finally, your code may call the `gamepad-controls` component directly to request the state of a button, as a [GamepadButton](https://developer.mozilla.org/en-US/docs/Web/API/GamepadButton) instance:
+
+```javascript
+el.components['gamepad-controls'].getButton(index);
+// Returns a GamepadButton instance.
+```
+
 ## Options
 
 Property          | Default | Description

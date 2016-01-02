@@ -5,6 +5,8 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
  */
 
+var GamepadButtonEvent = require('./lib/GamepadButtonEvent');
+
 var MAX_DELTA = 0.2,
     PI_2 = Math.PI / 2;
 
@@ -64,6 +66,9 @@ module.exports = {
     this.yaw.position.y = 10;
     this.yaw.add(this.pitch);
 
+    // Button state
+    this.buttons = {};
+
     scene.addBehavior(this);
 
     if (!this.getGamepad()) {
@@ -81,6 +86,7 @@ module.exports = {
   update: function (previousData) {
     this.updatePosition(!!previousData);
     this.updateRotation();
+    this.updateButtonState();
   },
 
   /**
@@ -176,6 +182,41 @@ module.exports = {
         z: 0
       });
     }
+  },
+
+  /*******************************************************************
+  * Button events
+  */
+
+  updateButtonState: function () {
+    var gamepad = this.getGamepad();
+    if (this.data.enabled && gamepad) {
+
+      // Fire DOM events for button state changes.
+      for (var i = 0; i < gamepad.buttons.length; i++) {
+        if (gamepad.buttons[i].pressed && !this.buttons[i]) {
+          this.emit(new GamepadButtonEvent('gamepadbuttondown', i, gamepad.buttons[i]));
+        } else if (!gamepad.buttons[i].pressed && this.buttons[i]) {
+          this.emit(new GamepadButtonEvent('gamepadbuttonup', i, gamepad.buttons[i]));
+        }
+        this.buttons[i] = gamepad.buttons[i].pressed;
+      }
+
+    } else if (Object.keys(this.buttons)) {
+      // Reset state if controls are disabled or controller is lost.
+      this.buttons = {};
+    }
+  },
+
+  emit: function (event) {
+    // Emit original event.
+    this.el.emit(event.type, event);
+
+    // Emit convenience event, identifying button index.
+    this.el.emit(
+      event.type + ':' + event.index,
+      new GamepadButtonEvent(event.type, event.index, event)
+    );
   },
 
   /*******************************************************************
