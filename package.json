@@ -1,6 +1,6 @@
 {
   "name": "aframe-gamepad-controls",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Gamepad controls for A-Frame VR.",
   "main": "gamepad-controls.js",
   "scripts": {
