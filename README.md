@@ -74,10 +74,12 @@ Property | Type    | Description
 ---------|---------|--------------
 type     | string  | Either `gamepadbuttondown` or `gamepadbuttonup`.
 index    | int     | Index of the button affected, 0..N.
-pressed  | boolean | Whether
-value    | float   | Distance the button was pressed, if applicable. `value` will be 0 or 1 in most cases, but may return a float for trigger-like buttons.
+pressed  | boolean | Whether or not the button is currently pressed.
+value    | float   | Distance the button was pressed, if applicable. Value will be 0 or 1 in most cases, but may return a float on the interval [0..1] for trigger-like buttons.
 
-For convenience, additional events are fired including the button index, providing a way to bind events to specific buttons using only markup. For example, to play "pew-pew" sound when `Button 7` is pressed (right trigger on an Xbox controller), you might do the following:
+**Markup-only Binding:**
+
+For convenience, additional events are fired including the button index, providing a way to bind events to specific buttons using only markup. To play `pew-pew.wav` when `Button 7` is pressed (right trigger on an Xbox controller), you might do this:
 
 ```html
 <a-entity gamepad-controls
