@@ -2,8 +2,28 @@
   <head>
     <script src="https://aframe.io/releases/latest/aframe.js"></script>
     <script src="https://cdn.rawgit.com/donmccurdy/aframe-gamepad-controls/v0.0.4/dist/aframe-gamepad-controls.js"></script>
+    <style>
+      .overlay {
+        z-index: 100;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        max-width: calc(100% - 40px);
+        box-sizing: border-box;
+        padding: 0.5em;
+        color: #FFF;
+        background: rgba(0,0,0,0.5);
+        border-radius: 3px;
+        font-family: monospace;
+        font-size: 1.2em;
+      }
+    </style>
   </head>
   <body>
+    <div class="overlay">
+      Connect a gamepad and press any button to continue.
+    </div>
+
     <a-scene>
       <!--
         Camera + Gamepad controls
