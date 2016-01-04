@@ -277,7 +277,7 @@ module.exports = {
    * may vary across browsers, for a given controller.
    * @return {string}
    */
-  getId: function () {
+  getID: function () {
     return this.getGamepad().id;
   }
 
