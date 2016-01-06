@@ -62,7 +62,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * Gamepad controls for A-Frame VR.
+	 * Gamepad controls for A-Frame.
 	 *
 	 * For more information about the Gamepad API, see:
 	 * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API

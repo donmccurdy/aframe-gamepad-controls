@@ -1,6 +1,6 @@
 # A-Frame `gamepad-controls` Component
 
-Gamepad controls for A-Frame VR.
+Gamepad controls for A-Frame.
 
 Demo: https://www.donmccurdy.com/aframe-gamepad-controls/
 
@@ -15,7 +15,7 @@ This component uses the HTML5 [Gamepad API](https://developer.mozilla.org/en-US/
 ```html
 <html>
   <head>
-    <!-- A-Frame VR Library -->
+    <!-- A-Frame Library -->
     <script src="https://aframe.io/releases/latest/aframe.js"></script>
 
     <!-- Component -->

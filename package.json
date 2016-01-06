@@ -1,7 +1,7 @@
 {
   "name": "aframe-gamepad-controls",
   "version": "0.1.2",
-  "description": "Gamepad controls for A-Frame VR.",
+  "description": "Gamepad controls for A-Frame.",
   "main": "gamepad-controls.js",
   "scripts": {
     "dev": "budo browser.js:bundle.js --dir examples --port 8000 --live --open",
