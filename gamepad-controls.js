@@ -224,11 +224,18 @@ module.exports = {
   */
 
   /**
-   * Returns the Gamepad instance attached to the component.
+   * Returns the Gamepad instance attached to the component. If connected,
+   * a proxy-controls component may provide access to Gamepad input from a
+   * remote device.
+   *
    * @return {Gamepad}
    */
   getGamepad: function () {
-    return navigator.getGamepads()[this.data.controller];
+    var localGamepad = navigator.getGamepads()[this.data.controller],
+        proxyControls = this.el.components['proxy-controls'],
+        proxyGamepad = proxyControls && proxyControls.isConnected()
+          && proxyControls.getGamepad(this.data.controller);
+    return proxyGamepad || localGamepad;
   },
 
   /**
@@ -269,7 +276,8 @@ module.exports = {
    * @return {boolean}
    */
   isConnected: function () {
-    return this.getGamepad().connected;
+    var gamepad = this.getGamepad();
+    return !!(gamepad && gamepad.connected);
   },
 
   /**

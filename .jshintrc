@@ -16,7 +16,7 @@
   "immed": true,
   "latedef": "nofunc",
   "laxbreak": true,
-  "maxlen": 80,
+  "maxlen": 100,
   "newcap": true,
   "noarg": true,
   "noempty": true,
