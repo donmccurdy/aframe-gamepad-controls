@@ -115,8 +115,6 @@ Property          | Default | Description
 controller        | 0       | Which controller (0..3) the object should be attached to.
 enabled           | true    | Enables all events on this controller.
 movementEnabled   | true    | Enables movement via the left thumbstick.
-lookEnabled       | auto    | Enables view rotation via the right thumbstick.
-`auto`, `true`, or `false`. In `auto` mode, view rotation is disabled
-automatically in VR mode, if a `look-controls` component is active.
+lookEnabled       | auto    | `auto`, `true`, or `false`. Enables view rotation via the right thumbstick. With `auto`, view rotation is disabled in VR mode if a `look-controls` component is active.
 flyEnabled        | false   | Whether or not movement is restricted to the entity’s initial plane.
 debug             | false   | When true, shows debugging info in the console.
