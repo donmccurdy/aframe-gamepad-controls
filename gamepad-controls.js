@@ -14,8 +14,6 @@ var JOYSTICK_EPS = 0.2;
 
 module.exports = {
 
-  dependencies: ['proxy-controls'],
-
   /*******************************************************************
   * Schema
   */
