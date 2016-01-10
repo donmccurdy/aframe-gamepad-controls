@@ -71,6 +71,10 @@ npm run dev
 
 The demo will run at [http://localhost:8000/](http://localhost:8000/).
 
+## Mobile / Cardboard + Gamepad
+
+In Chrome on Android, USB gamepads can be connected with an OTG adapter. For a Nexus 5X, I use [this](http://www.amazon.com/gp/product/B00XHOGEZG). I'm not aware of a way to connect a gamepad in iOS, but definitely let me know if there's something I'm missing.
+
 ## Button Events
 
 When buttons are pressed on the gamepad, a [GamepadButtonEvent](https://github.com/donmccurdy/aframe-gamepad-controls/blob/master/lib/GamepadButtonEvent.js) is emitted on the element. Components and entities may listen for these events and modify behavior as needed. Example:
