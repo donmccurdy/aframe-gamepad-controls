@@ -27,7 +27,7 @@ module.exports = {
     // Enable/disable features
     enabled:           { default: true },
     movementEnabled:   { default: true },
-    lookEnabled:       { default: true },
+    lookEnabled:       { default: 'auto', oneOf: ['auto', 'true', 'false']},
     flyEnabled:        { default: false },
 
     // Constants
@@ -167,7 +167,7 @@ module.exports = {
   */
  
   updateRotation: function () {
-    if (this.data.lookEnabled && this.getGamepad()) {
+    if (this.isLookEnabled() && this.getGamepad()) {
       var lookVector = this.getJoystick(1);
       if (Math.abs(lookVector.x) <= JOYSTICK_EPS) lookVector.x = 0;
       if (Math.abs(lookVector.y) <= JOYSTICK_EPS) lookVector.y = 0;
@@ -287,6 +287,17 @@ module.exports = {
    */
   getID: function () {
     return this.getGamepad().id;
+  },
+
+  isLookEnabled: function () {
+    if (this.data.lookEnabled === 'true') return true;
+
+    // TODO: This isn't a reliable way to detect VR mode.
+    var isVRMode = document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen,
+        hasLookControls = !!this.el.components['look-controls'];
+
+    // For 'auto', look-controls component takes priority in VR mode.
+    return !(this.data.lookEnabled === 'auto' && isVRMode && hasLookControls);
   }
 
 };
