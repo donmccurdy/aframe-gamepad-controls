@@ -5,7 +5,8 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
  */
 
-var GamepadButtonEvent = require('./lib/GamepadButtonEvent');
+var GamepadButton = require('./lib/GamepadButton'),
+    GamepadButtonEvent = require('./lib/GamepadButtonEvent');
 
 var MAX_DELTA = 0.2,
     PI_2 = Math.PI / 2;
@@ -13,6 +14,12 @@ var MAX_DELTA = 0.2,
 var JOYSTICK_EPS = 0.2;
 
 module.exports = {
+
+  /*******************************************************************
+  * Statics
+  */
+
+  GamepadButton: GamepadButton,
 
   /*******************************************************************
   * Schema
