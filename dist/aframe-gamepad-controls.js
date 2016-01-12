@@ -68,7 +68,8 @@
 	 * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
 	 */
 
-	var GamepadButtonEvent = __webpack_require__(2);
+	var GamepadButton = __webpack_require__(2),
+	    GamepadButtonEvent = __webpack_require__(3);
 
 	var MAX_DELTA = 0.2,
 	    PI_2 = Math.PI / 2;
@@ -77,7 +78,11 @@
 
 	module.exports = {
 
-	  dependencies: ['proxy-controls'],
+	  /*******************************************************************
+	  * Statics
+	  */
+
+	  GamepadButton: GamepadButton,
 
 	  /*******************************************************************
 	  * Schema
@@ -353,14 +358,13 @@
 	  },
 
 	  isLookEnabled: function () {
-	    if (this.data.lookEnabled === 'true') return true;
+	    if (this.data.lookEnabled !== 'auto') return this.data.lookEnabled === 'true';
 
+	    // For 'auto' setting, look-controls component takes priority in VR mode.
 	    // TODO: This isn't a reliable way to detect VR mode.
 	    var isVRMode = document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen,
 	        hasLookControls = !!this.el.components['look-controls'];
-
-	    // For 'auto', look-controls component takes priority in VR mode.
-	    return !(this.data.lookEnabled === 'auto' && isVRMode && hasLookControls);
+	    return !(isVRMode && hasLookControls);
 	  }
 
 	};
@@ -368,6 +372,33 @@
 
 /***/ },
 /* 2 */
+/***/ function(module, exports) {
+
+	module.exports = Object.assign(function GamepadButton () {}, {
+		FACE_1: 0,
+		FACE_2: 1,
+		FACE_3: 2,
+		FACE_4: 3,
+
+		L_SHOULDER_1: 4,
+		R_SHOULDER_1: 5,
+		L_SHOULDER_2: 6,
+		R_SHOULDER_2: 7,
+
+		SELECT: 8,
+		START: 9,
+
+		DPAD_UP: 12,
+		DPAD_DOWN: 13,
+		DPAD_LEFT: 14,
+		DPAD_RIGHT: 15,
+
+		VENDOR: 16,
+	});
+
+
+/***/ },
+/* 3 */
 /***/ function(module, exports) {
 
 	function GamepadButtonEvent (type, index, details) {

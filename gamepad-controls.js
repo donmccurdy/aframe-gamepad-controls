@@ -295,14 +295,13 @@ module.exports = {
   },
 
   isLookEnabled: function () {
-    if (this.data.lookEnabled === 'true') return true;
+    if (this.data.lookEnabled !== 'auto') return this.data.lookEnabled === 'true';
 
+    // For 'auto' setting, look-controls component takes priority in VR mode.
     // TODO: This isn't a reliable way to detect VR mode.
     var isVRMode = document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen,
         hasLookControls = !!this.el.components['look-controls'];
-
-    // For 'auto', look-controls component takes priority in VR mode.
-    return !(this.data.lookEnabled === 'auto' && isVRMode && hasLookControls);
+    return !(isVRMode && hasLookControls);
   }
 
 };
