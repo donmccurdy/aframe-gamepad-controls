@@ -10,7 +10,7 @@
     "test": "karma start ./tests/karma.conf.js",
     "preversion": "karma start ./tests/karma.conf.js --single-run",
     "version": "npm run dist && git add -A dist",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags && npm publish"
   },
   "repository": {
     "type": "git",
