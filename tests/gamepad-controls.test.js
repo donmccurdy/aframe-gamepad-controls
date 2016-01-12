@@ -13,7 +13,9 @@ describe('Gamepad Controls', function () {
 	beforeEach(function () {
 		gamepad = {
 			axes: [0, 0, 0, 0],
-			buttons: [],
+			buttons: '.................'.split('.').map(function () {
+				return { pressed: 0, value: 0 };
+			}),
 			connected: true,
 			id: 'test-gamepad'
 		};
