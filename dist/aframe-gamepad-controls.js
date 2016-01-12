@@ -194,11 +194,14 @@
 	    var position = el.getComputedAttribute('position');
 
 	    if (data.enabled && data.movementEnabled && gamepad) {
-	      if (Math.abs(this.getJoystick(0).x) > JOYSTICK_EPS) {
-	        velocity[pitchAxis] += this.getJoystick(0).x * acceleration * delta;
+	      var dpad = this.getDpad(),
+	          inputX = dpad.x || this.getJoystick(0).x,
+	          inputY = dpad.y || this.getJoystick(0).y;
+	      if (Math.abs(inputX) > JOYSTICK_EPS) {
+	        velocity[pitchAxis] += inputX * acceleration * delta;
 	      }
-	      if (Math.abs(this.getJoystick(0).y) > JOYSTICK_EPS) {
-	        velocity[rollAxis] += this.getJoystick(0).y * acceleration * delta;
+	      if (Math.abs(inputY) > JOYSTICK_EPS) {
+	        velocity[rollAxis] += inputY * acceleration * delta;
 	      }
 	    }
 
@@ -337,6 +340,23 @@
 	      case 1: return new THREE.Vector2(gamepad.axes[2], gamepad.axes[3]);
 	      default: throw new Error('Unexpected joystick index "%d".', index);
 	    }
+	  },
+
+	  /**
+	   * Returns the state of the dpad as a THREE.Vector2.
+	   * @return {THREE.Vector2}
+	   */
+	  getDpad: function () {
+	    var gamepad = this.getGamepad();
+	    if (!gamepad.buttons[GamepadButton.DPAD_RIGHT]) {
+	      return new THREE.Vector2();
+	    }
+	    return new THREE.Vector2(
+	      (gamepad.buttons[GamepadButton.DPAD_RIGHT].pressed ? 1 : 0)
+	      + (gamepad.buttons[GamepadButton.DPAD_LEFT].pressed ? -1 : 0),
+	      (gamepad.buttons[GamepadButton.DPAD_UP].pressed ? -1 : 0)
+	      + (gamepad.buttons[GamepadButton.DPAD_DOWN].pressed ? 1 : 0)
+	    );
 	  },
 
 	  /**
