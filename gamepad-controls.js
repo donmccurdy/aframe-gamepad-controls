@@ -89,8 +89,8 @@ module.exports = {
    * Generally modifies the entity based on the data.
    */
   update: function (previousData) {
-    this.updatePosition(!!previousData);
     this.updateRotation();
+    this.updatePosition(!!previousData);
     this.updateButtonState();
   },
 
