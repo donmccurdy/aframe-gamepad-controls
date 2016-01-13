@@ -58,7 +58,7 @@ module.exports = {
    */
   init: function () {
     var scene = this.el.sceneEl;
-    this.prevTime = Date.now();
+    this.prevTime = window.performance.now();
 
     // Movement
     this.velocity = new THREE.Vector3(0, 0, 0);

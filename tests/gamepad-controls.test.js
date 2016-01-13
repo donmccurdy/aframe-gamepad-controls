@@ -5,8 +5,7 @@ var entityFactory = require('./helpers').entityFactory;
 Aframe.registerComponent('gamepad-controls', component);
 
 var gamepad,
-	gamepadControls;
-navigator.getGamepads = function () { return [gamepad]; };
+	ctrl;
 
 describe('Gamepad Controls', function () {
 
@@ -19,31 +18,77 @@ describe('Gamepad Controls', function () {
 			connected: true,
 			id: 'test-gamepad'
 		};
+		this.sinon.stub(navigator, 'getGamepads').returns([gamepad]);
 	});
 
 	beforeEach(function (done) {
 		this.el = entityFactory();
 		this.el.setAttribute('gamepad-controls', '');
 		this.el.addEventListener('loaded', function () {
-			gamepadControls = this.el.components['gamepad-controls'];
+			ctrl = this.el.components['gamepad-controls'];
 			done();
 		}.bind(this));
 	});
 
-	describe('Gamepad Controls accessors', function () {
+	describe('Accessors', function () {
 		it('detects a gamepad', function () {
-			assert.equal(gamepadControls.getGamepad(), gamepad);
+			expect(ctrl.getGamepad()).to.equal(gamepad);
+			expect(ctrl.isConnected()).to.be.true;
 		});
 
 		it('returns gamepad ID', function () {
-			assert.equal(gamepadControls.getID(), 'test-gamepad');
+			expect(ctrl.getID()).to.equal('test-gamepad');
 		});
 
 		it('returns joystick state', function () {
-			var joystick0 = gamepadControls.getJoystick(0);
-			assert.equal(joystick0.x, 0);
-			assert.equal(joystick0.y, 0);
+			var joystick0 = ctrl.getJoystick(0);
+			expect(joystick0.x).to.equal(0);
+			expect(joystick0.y).to.equal(0);
 		});
 
+		it('returns dpad state', function () {
+			var dpad = ctrl.getDpad();
+			expect(dpad.x).to.equal(0);
+			expect(dpad.y).to.equal(0);
+		});
 	});
+
+	describe('Movement', function () {
+		it.skip('moves object up/down/right/left with stick0', function () {
+			// TODO
+		});
+
+		it.skip('moves object up/down/right/left with dpad', function () {
+			// TODO
+		});
+	});
+
+	describe('Rotation', function () {
+		it('supports lookEnabled:true (default)', function () {
+			expect(ctrl.isLookEnabled()).to.be.true;
+		});
+
+		it('supports lookEnabled:false', function () {
+			this.el.setAttribute('gamepad-controls', 'lookEnabled: false');
+			expect(ctrl.isLookEnabled()).to.be.false;
+		});
+
+		it('supports lookEnabled:auto', function () {
+			this.el.setAttribute('gamepad-controls', 'lookEnabled: auto');
+			expect(ctrl.isLookEnabled()).to.be.true;
+			this.el.components['look-controls'] = true;
+			expect(ctrl.isLookEnabled()).to.be.true;
+			document.fullscreen = true;
+			expect(ctrl.isLookEnabled()).to.be.false;
+			delete this.el.components['look-controls'];
+			expect(ctrl.isLookEnabled()).to.be.true;
+		});
+	});
+
+	describe('Movement + Rotation', function () {
+		it.skip('moves relative to post-rotation heading', function () {
+			// TODO
+		});
+	});
+
 });
