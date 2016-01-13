@@ -64,17 +64,10 @@ describe('Gamepad Controls', function () {
 	});
 
 	describe('Rotation', function () {
-		it('supports lookEnabled:true (default)', function () {
-			expect(ctrl.isLookEnabled()).to.be.true;
-		});
-
-		it('supports lookEnabled:false', function () {
-			this.el.setAttribute('gamepad-controls', 'lookEnabled: false');
-			expect(ctrl.isLookEnabled()).to.be.false;
-		});
-
-		it('supports lookEnabled:auto', function () {
-			this.el.setAttribute('gamepad-controls', 'lookEnabled: auto');
+		it('supports lookEnabled:auto (default)', function () {
+			// Look controls should be enabled only when VR mode is active AND
+			// there is a 'look-controls' instance on the element.
+			this.el.setAttribute('gamepad-controls', '');
 			expect(ctrl.isLookEnabled()).to.be.true;
 			this.el.components['look-controls'] = true;
 			expect(ctrl.isLookEnabled()).to.be.true;
@@ -82,6 +75,20 @@ describe('Gamepad Controls', function () {
 			expect(ctrl.isLookEnabled()).to.be.false;
 			delete this.el.components['look-controls'];
 			expect(ctrl.isLookEnabled()).to.be.true;
+		});
+
+		it('supports lookEnabled:true', function () {
+			this.el.setAttribute('gamepad-controls', 'lookEnabled: true');
+			expect(ctrl.isLookEnabled()).to.be.true;
+			this.el.components['look-controls'] = true;
+			document.fullscreen = true;
+			expect(ctrl.isLookEnabled()).to.be.true;
+			delete this.el.components['look-controls'];
+		});
+
+		it('supports lookEnabled:false', function () {
+			this.el.setAttribute('gamepad-controls', 'lookEnabled: false');
+			expect(ctrl.isLookEnabled()).to.be.false;
 		});
 	});
 
