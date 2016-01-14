@@ -4,12 +4,21 @@ var entityFactory = require('./helpers').entityFactory;
 
 Aframe.registerComponent('gamepad-controls', component);
 
-var gamepad,
-	ctrl;
-
 describe('Gamepad Controls', function () {
 
+	/*******************************************************************
+	* Setup
+	*/
+
+	var GamepadButton = component.GamepadButton,
+		EPS = 1e-6;
+
+	var gamepad,
+		ctrl,
+		currentTime = 0;
+
 	beforeEach(function () {
+		// Mock gamepad
 		gamepad = {
 			axes: [0, 0, 0, 0],
 			buttons: '.................'.split('.').map(function () {
@@ -19,6 +28,10 @@ describe('Gamepad Controls', function () {
 			id: 'test-gamepad'
 		};
 		this.sinon.stub(navigator, 'getGamepads').returns([gamepad]);
+
+		// Mock time
+		currentTime = 0;
+		this.sinon.stub(window.performance, 'now', function () { return currentTime; });
 	});
 
 	beforeEach(function (done) {
@@ -29,6 +42,10 @@ describe('Gamepad Controls', function () {
 			done();
 		}.bind(this));
 	});
+
+	/*******************************************************************
+	* Tests
+	*/
 
 	describe('Accessors', function () {
 		it('detects a gamepad', function () {
@@ -54,12 +71,31 @@ describe('Gamepad Controls', function () {
 	});
 
 	describe('Movement', function () {
-		it.skip('moves object up/down/right/left with stick0', function () {
-			// TODO
+		it('moves object up/down/right/left with stick0', function () {
+			currentTime = 100;
+			gamepad.axes = [0, 1, 0, 0];
+			ctrl.updatePosition();
+			expect(this.el.object3D.position.z).to.equal(0.65);
+
+			currentTime = 101;
+			gamepad.axes = [1, 0, 0, 0];
+			ctrl.updatePosition();
+			expect(Math.abs(this.el.object3D.position.x - 0.000065)).to.be.below(EPS);
+			expect(Math.abs(this.el.object3D.position.z - 0.65637)).to.be.below(EPS);
 		});
 
-		it.skip('moves object up/down/right/left with dpad', function () {
-			// TODO
+		it('moves object up/down/right/left with dpad', function () {
+			currentTime = 100;
+			gamepad.buttons[GamepadButton.DPAD_DOWN] = {pressed: true, value: 1};
+			ctrl.updatePosition();
+			expect(this.el.object3D.position.z).to.equal(0.65);
+
+			currentTime = 101;
+			gamepad.buttons[GamepadButton.DPAD_DOWN] = {pressed: false, value: 0};
+			gamepad.buttons[GamepadButton.DPAD_RIGHT] = {pressed: true, value: 1};
+			ctrl.updatePosition();
+			expect(Math.abs(this.el.object3D.position.x - 0.000065)).to.be.below(EPS);
+			expect(Math.abs(this.el.object3D.position.z - 0.65637)).to.be.below(EPS);
 		});
 	});
 
@@ -93,8 +129,13 @@ describe('Gamepad Controls', function () {
 	});
 
 	describe('Movement + Rotation', function () {
-		it.skip('moves relative to post-rotation heading', function () {
-			// TODO
+		it('moves relative to post-rotation heading', function () {
+			currentTime = 100;
+			this.el.setAttribute('rotation', {x: 0, y: 90, z: 0});
+			gamepad.buttons[GamepadButton.DPAD_DOWN] = {pressed: true, value: 1};
+			ctrl.updatePosition();
+			expect(this.el.object3D.position.z).to.be.within(-EPS, +EPS);
+			expect(Math.abs(this.el.object3D.position.x - 0.65)).to.be.below(EPS);
 		});
 	});
 
