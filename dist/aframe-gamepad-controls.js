@@ -121,7 +121,7 @@
 	   */
 	  init: function () {
 	    var scene = this.el.sceneEl;
-	    this.prevTime = Date.now();
+	    this.prevTime = window.performance.now();
 
 	    // Movement
 	    this.velocity = new THREE.Vector3(0, 0, 0);
@@ -302,7 +302,8 @@
 	   * @return {Gamepad}
 	   */
 	  getGamepad: function () {
-	    var localGamepad = navigator.getGamepads()[this.data.controller],
+	    var localGamepad = navigator.getGamepads
+	          && navigator.getGamepads()[this.data.controller],
 	        proxyControls = this.el.components['proxy-controls'],
 	        proxyGamepad = proxyControls && proxyControls.isConnected()
 	          && proxyControls.getGamepad(this.data.controller);
