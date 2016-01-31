@@ -6,7 +6,7 @@ Demo: https://www.donmccurdy.com/aframe-gamepad-controls/
 
 ## Overview
 
-Supports one or more gamepads, attached to an A-Frame scene.
+Supports one or more gamepads, attached to an A-Frame scene. When used on a mobile device, `gamepad-controls` can also receive input from a gamepad connected to a host machine, using [ProxyControls.js](https://proxy-controls.donmccurdy.com).
 
 This component uses the HTML5 [Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API). The underlying API supports Firefox, Chrome, Edge, and Opera ([as of 01/2016](http://caniuse.com/#search=gamepad)). Safari and Internet Explorer do not currently support gamepads.
 
@@ -74,6 +74,18 @@ The demo will run at [http://localhost:8000/](http://localhost:8000/).
 ## Mobile / Cardboard + Gamepad
 
 In Chrome on Android, USB gamepads can be connected with an OTG adapter. For a Nexus 5X, I use [this](http://www.amazon.com/gp/product/B00XHOGEZG). I'm not aware of a way to connect a gamepad in iOS, but definitely let me know if there's something I'm missing.
+
+The `gamepad-controls` component can also receive remote events with WebRTC, if a `proxy-controls` element is attached to the scene. [More details about ProxyControls.js](https://proxy-controls.donmccurdy.com).
+
+Example:
+
+```html
+<a-scene proxy-controls>
+  <a-entity camera
+            gamepad-controls>
+  </a-entity>
+</a-scene>
+```
 
 ## Button Events
 
