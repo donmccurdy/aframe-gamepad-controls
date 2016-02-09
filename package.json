@@ -4,11 +4,10 @@
   "description": "Gamepad controls for A-Frame.",
   "main": "gamepad-controls.js",
   "config": {
-    "demo_host": "localhost",
     "demo_port": 8000
   },
   "scripts": {
-    "dev": "budo browser.js:bundle.js --dir examples --host $npm_package_config_demo_host --port $npm_package_config_demo_port --live --open",
+    "dev": "budo browser.js:bundle.js --dir examples --port $npm_package_config_demo_port --live",
     "dist": "webpack browser.js dist/aframe-gamepad-controls.js && webpack -p browser.js dist/aframe-gamepad-controls.min.js",
     "postpublish": "npm run dist",
     "test": "karma start ./tests/karma.conf.js",
