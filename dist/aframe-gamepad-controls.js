@@ -95,7 +95,7 @@
 	    // Enable/disable features
 	    enabled:           { default: true },
 	    movementEnabled:   { default: true },
-	    lookEnabled:       { default: 'auto', oneOf: ['auto', 'true', 'false']},
+	    lookEnabled:       { default: true },
 	    flyEnabled:        { default: false },
 
 	    // Constants
@@ -126,7 +126,6 @@
 	    // Movement
 	    this.velocity = new THREE.Vector3(0, 0, 0);
 	    this.direction = new THREE.Vector3(0, 0, 0);
-	    this.rotation = new THREE.Euler(0, 0, 0, 'YXZ');
 
 	    // Rotation
 	    this.pitch = new THREE.Object3D();
@@ -218,30 +217,76 @@
 	    });
 	  },
 
-	  getMovementVector: function (delta) {
-	    var elRotation = this.el.getAttribute('rotation');
-	    this.direction.copy(this.velocity);
-	    this.direction.multiplyScalar(delta);
-	    if (!elRotation) { return this.direction; }
-	    if (!this.data.flyEnabled) { elRotation.x = 0; }
-	    this.rotation.set(
-	      THREE.Math.degToRad(elRotation.x),
-	      THREE.Math.degToRad(elRotation.y),
-	      0
-	    );
-	    this.direction.applyEuler(this.rotation);
-	    return this.direction;
-	  },
+	  getMovementVector: (function () {
+	    var rotation = new THREE.Euler(0, 0, 0, 'YXZ');
+
+	    return function (delta) {
+	      var elRotation = this.el.getAttribute('rotation');
+	      this.direction.copy(this.velocity);
+	      this.direction.multiplyScalar(delta);
+	      if (!elRotation) { return this.direction; }
+	      if (!this.data.flyEnabled) { elRotation.x = 0; }
+	      rotation.set(
+	        THREE.Math.degToRad(elRotation.x),
+	        THREE.Math.degToRad(elRotation.y),
+	        0
+	      );
+	      this.direction.applyEuler(rotation);
+	      return this.direction;
+	    };
+	  }()),
 
 	  /*******************************************************************
 	  * Rotation
 	  */
 	 
-	  updateRotation: function () {
-	    if (this.isLookEnabled() && this.getGamepad()) {
+	  updateRotation: (function () {
+	    var initialRotation = new THREE.Vector3(),
+	        prevInitialRotation = new THREE.Vector3(),
+	        prevFinalRotation = new THREE.Vector3();
+
+	    var tCurrent,
+	        tLastLocalActivity = 0,
+	        tLastExternalActivity = 0;
+
+	    var ROTATION_EPS = 0.0001,
+	        DEBOUNCE = 500;
+
+	    return function () {
+	      if (!this.data.lookEnabled || !this.getGamepad()) {
+	        return;
+	      }
+
+	      tCurrent = Date.now();
+	      initialRotation.copy(this.el.getAttribute('rotation') || initialRotation);
+
+	      // If initial rotation for this frame is different from last frame, and
+	      // doesn't match last gamepad state, assume an external component is
+	      // active on this element.
+	      if (initialRotation.distanceToSquared(prevInitialRotation) > ROTATION_EPS
+	          && initialRotation.distanceToSquared(prevFinalRotation) > ROTATION_EPS) {
+	        prevInitialRotation.copy(initialRotation);
+	        tLastExternalActivity = tCurrent;
+	        return;
+	      }
+
+	      prevInitialRotation.copy(initialRotation);
+
+	      // If external controls have been active in last 500ms, wait.
+	      if (tCurrent - tLastExternalActivity < DEBOUNCE) {
+	        return;
+	      }
+
 	      var lookVector = this.getJoystick(1);
 	      if (Math.abs(lookVector.x) <= JOYSTICK_EPS) lookVector.x = 0;
 	      if (Math.abs(lookVector.y) <= JOYSTICK_EPS) lookVector.y = 0;
+	      
+	      // If external controls have been active more recently than gamepad,
+	      // and gamepad hasn't moved, don't overwrite the existing rotation.
+	      if (tLastExternalActivity > tLastLocalActivity && !lookVector.lengthSq()) {
+	        return;
+	      }
+
 	      lookVector.multiplyScalar(this.data.sensitivity);
 	      this.yaw.rotation.y -= lookVector.x;
 	      this.pitch.rotation.x -= lookVector.y;
@@ -252,8 +297,10 @@
 	        y: THREE.Math.radToDeg(this.yaw.rotation.y),
 	        z: 0
 	      });
-	    }
-	  },
+	      prevFinalRotation.copy(this.el.getAttribute('rotation'));
+	      tLastLocalActivity = tCurrent;
+	    };
+	  }()),
 
 	  /*******************************************************************
 	  * Button events
@@ -376,18 +423,7 @@
 	   */
 	  getID: function () {
 	    return this.getGamepad().id;
-	  },
-
-	  isLookEnabled: function () {
-	    if (this.data.lookEnabled !== 'auto') return this.data.lookEnabled === 'true';
-
-	    // For 'auto' setting, look-controls component takes priority in VR mode.
-	    // TODO: This isn't a reliable way to detect VR mode.
-	    var isVRMode = document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen,
-	        hasLookControls = !!this.el.components['look-controls'];
-	    return !(isVRMode && hasLookControls);
 	  }
-
 	};
 
 
