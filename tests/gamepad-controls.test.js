@@ -99,7 +99,7 @@ describe('Gamepad Controls', function () {
 		});
 	});
 
-	describe('Rotation', function () {
+	describe.skip('Rotation', function () {
 		it('supports lookEnabled:auto (default)', function () {
 			// Look controls should be enabled only when VR mode is active AND
 			// there is a 'look-controls' instance on the element.
