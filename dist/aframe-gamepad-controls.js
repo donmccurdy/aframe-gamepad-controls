@@ -157,6 +157,15 @@
 	  },
 
 	  /**
+	   * Called on each iteration of main render loop.
+	   */
+	  tick: function () {
+	    this.updateRotation();
+	    this.updatePosition();
+	    this.updateButtonState();
+	  },
+
+	  /**
 	   * Called when a component is removed (e.g., via removeAttribute).
 	   * Generally undoes all modifications to the entity.
 	   */
