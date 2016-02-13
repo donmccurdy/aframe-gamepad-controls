@@ -24,6 +24,8 @@ module.exports = {
   /*******************************************************************
   * Schema
   */
+ 
+  dependencies: ['look-controls'],
 
   schema: {
     // Controller 0-3
@@ -213,14 +215,14 @@ module.exports = {
           && initialRotation.distanceToSquared(prevFinalRotation) > ROTATION_EPS) {
         prevInitialRotation.copy(initialRotation);
         tLastExternalActivity = tCurrent;
-        return;
+        return this.unlockRotation();
       }
 
       prevInitialRotation.copy(initialRotation);
 
       // If external controls have been active in last 500ms, wait.
       if (tCurrent - tLastExternalActivity < DEBOUNCE) {
-        return;
+        return this.unlockRotation();
       }
 
       var lookVector = this.getJoystick(1);
@@ -230,8 +232,11 @@ module.exports = {
       // If external controls have been active more recently than gamepad,
       // and gamepad hasn't moved, don't overwrite the existing rotation.
       if (tLastExternalActivity > tLastLocalActivity && !lookVector.lengthSq()) {
-        return;
+        return this.unlockRotation();
       }
+
+      if (lookVector.lengthSq()) this.lockRotation();
+      else                       this.unlockRotation();
 
       lookVector.multiplyScalar(this.data.sensitivity);
       this.yaw.rotation.y -= lookVector.x;
@@ -247,6 +252,26 @@ module.exports = {
       tLastLocalActivity = tCurrent;
     };
   }()),
+
+  /**
+   * Prevent look-controls from overwriting rotation.
+   */
+  lockRotation: function () {
+    var lookControls = this.el.components['look-controls'];
+    if (lookControls && lookControls.data.enabled) {
+      lookControls.el.setAttribute('look-controls', 'enabled', false);
+    }
+  },
+
+  /**
+   * Allow look-controls to rotate freely.
+   */
+  unlockRotation: function () {
+    var lookControls = this.el.components['look-controls'];
+    if (lookControls && !lookControls.data.enabled) {
+      lookControls.el.setAttribute('look-controls', 'enabled', true);
+    }
+  },
 
   /*******************************************************************
   * Button events
