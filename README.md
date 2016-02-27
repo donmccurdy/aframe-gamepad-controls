@@ -1,4 +1,4 @@
-# A-Frame `gamepad-controls` Component
+# A-Frame `gamepad-controls` 🎮 Component
 
 Gamepad controls for A-Frame.
 
