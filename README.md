@@ -1,4 +1,4 @@
-# A-Frame `gamepad-controls` 🎮
+# A-Frame `gamepad-controls`
 
 Gamepad controls for A-Frame.
 
