@@ -79,14 +79,14 @@
 	module.exports = {
 
 	  /*******************************************************************
-	  * Statics
-	  */
+	   * Statics
+	   */
 
 	  GamepadButton: GamepadButton,
 
 	  /*******************************************************************
-	  * Schema
-	  */
+	   * Schema
+	   */
 
 	  schema: {
 	    // Controller 0-3
@@ -97,6 +97,7 @@
 	    movementEnabled:   { default: true },
 	    lookEnabled:       { default: true },
 	    flyEnabled:        { default: false },
+	    invertAxisY:       { default: false },
 
 	    // Constants
 	    easing:            { default: 20 },
@@ -113,8 +114,8 @@
 	  },
 
 	  /*******************************************************************
-	  * Core
-	  */
+	   * Core
+	   */
 
 	  /**
 	   * Called once when component is attached. Generally for initial setup.
@@ -172,8 +173,8 @@
 	  remove: function () { },
 
 	  /*******************************************************************
-	  * Movement
-	  */
+	   * Movement
+	   */
 
 	  updatePosition: function (reset) {
 	    var data = this.data;
@@ -226,10 +227,14 @@
 	    });
 	  },
 
-	  getMovementVector: (function () {
+	  getMovementVector: function (delta) {
+	    if (this._getMovementVector) {
+	      return this._getMovementVector(delta);
+	    }
+
 	    var rotation = new THREE.Euler(0, 0, 0, 'YXZ');
 
-	    return function (delta) {
+	    this._getMovementVector = function (delta) {
 	      var elRotation = this.el.getAttribute('rotation');
 	      this.direction.copy(this.velocity);
 	      this.direction.multiplyScalar(delta);
@@ -243,13 +248,19 @@
 	      this.direction.applyEuler(rotation);
 	      return this.direction;
 	    };
-	  }()),
+
+	    return this._getMovementVector(delta);
+	  },
 
 	  /*******************************************************************
-	  * Rotation
-	  */
-	 
-	  updateRotation: (function () {
+	   * Rotation
+	   */
+	  
+	  updateRotation: function () {
+	    if (this._updateRotation) {
+	      return this._updateRotation();
+	    }
+
 	    var initialRotation = new THREE.Vector3(),
 	        prevInitialRotation = new THREE.Vector3(),
 	        prevFinalRotation = new THREE.Vector3();
@@ -261,7 +272,7 @@
 	    var ROTATION_EPS = 0.0001,
 	        DEBOUNCE = 500;
 
-	    return function () {
+	    this._updateRotation = function () {
 	      if (!this.data.lookEnabled || !this.getGamepad()) {
 	        return;
 	      }
@@ -289,6 +300,7 @@
 	      var lookVector = this.getJoystick(1);
 	      if (Math.abs(lookVector.x) <= JOYSTICK_EPS) lookVector.x = 0;
 	      if (Math.abs(lookVector.y) <= JOYSTICK_EPS) lookVector.y = 0;
+	      if (this.data.invertAxisY) lookVector.y = -lookVector.y;
 	      
 	      // If external controls have been active more recently than gamepad,
 	      // and gamepad hasn't moved, don't overwrite the existing rotation.
@@ -309,11 +321,13 @@
 	      prevFinalRotation.copy(this.el.getAttribute('rotation'));
 	      tLastLocalActivity = tCurrent;
 	    };
-	  }()),
+
+	    return this._updateRotation();
+	  },
 
 	  /*******************************************************************
-	  * Button events
-	  */
+	   * Button events
+	   */
 
 	  updateButtonState: function () {
 	    var gamepad = this.getGamepad();
@@ -347,8 +361,8 @@
 	  },
 
 	  /*******************************************************************
-	  * Gamepad state
-	  */
+	   * Gamepad state
+	   */
 
 	  /**
 	   * Returns the Gamepad instance attached to the component. If connected,
