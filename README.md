@@ -133,4 +133,5 @@ enabled           | true    | Enables all events on this controller.
 movementEnabled   | true    | Enables movement via the left thumbstick.
 lookEnabled       | true    | `true`, or `false`. Enables view rotation via the right thumbstick.
 flyEnabled        | false   | Whether or not movement is restricted to the entity’s initial plane.
+invertAxisY       | false   | Invert Y axis of view rotation thumbstick.
 debug             | false   | When true, shows debugging info in the console.

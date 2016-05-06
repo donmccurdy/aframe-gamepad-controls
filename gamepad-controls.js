@@ -34,6 +34,7 @@ module.exports = {
     movementEnabled:   { default: true },
     lookEnabled:       { default: true },
     flyEnabled:        { default: false },
+    invertAxisY:       { default: false },
 
     // Constants
     easing:            { default: 20 },
@@ -236,6 +237,7 @@ module.exports = {
       var lookVector = this.getJoystick(1);
       if (Math.abs(lookVector.x) <= JOYSTICK_EPS) lookVector.x = 0;
       if (Math.abs(lookVector.y) <= JOYSTICK_EPS) lookVector.y = 0;
+      if (this.data.invertAxisY) lookVector.y = -lookVector.y;
       
       // If external controls have been active more recently than gamepad,
       // and gamepad hasn't moved, don't overwrite the existing rotation.
