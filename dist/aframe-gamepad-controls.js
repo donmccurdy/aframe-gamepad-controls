@@ -71,7 +71,7 @@
 	var GamepadButton = __webpack_require__(2),
 	    GamepadButtonEvent = __webpack_require__(3);
 
-	var MAX_DELTA = 0.2,
+	var MAX_DELTA = 200, // ms
 	    PI_2 = Math.PI / 2;
 
 	var JOYSTICK_EPS = 0.2;
@@ -121,9 +121,6 @@
 	   * Called once when component is attached. Generally for initial setup.
 	   */
 	  init: function () {
-	    var scene = this.el.sceneEl;
-	    this.prevTime = window.performance.now();
-
 	    // Movement
 	    this.velocity = new THREE.Vector3(0, 0, 0);
 	    this.direction = new THREE.Vector3(0, 0, 0);
@@ -137,8 +134,6 @@
 	    // Button state
 	    this.buttons = {};
 
-	    scene.addBehavior(this);
-
 	    if (!this.getGamepad()) {
 	      console.warn(
 	        'Gamepad #%d not found. Connect controller and press any button to continue.',
@@ -148,57 +143,38 @@
 	  },
 
 	  /**
-	   * Called when component is attached and when component data changes.
-	   * Generally modifies the entity based on the data.
-	   */
-	  update: function (previousData) {
-	    this.updateRotation();
-	    this.updatePosition(!!previousData);
-	    this.updateButtonState();
-	  },
-
-	  /**
 	   * Called on each iteration of main render loop.
 	   */
-	  tick: function () {
-	    this.updateRotation();
-	    this.updatePosition();
+	  tick: function (t, dt) {
+	    this.updateRotation(dt);
+	    this.updatePosition(dt);
 	    this.updateButtonState();
 	  },
-
-	  /**
-	   * Called when a component is removed (e.g., via removeAttribute).
-	   * Generally undoes all modifications to the entity.
-	   */
-	  remove: function () { },
 
 	  /*******************************************************************
 	   * Movement
 	   */
 
-	  updatePosition: function (reset) {
+	  updatePosition: function (dt) {
 	    var data = this.data;
 	    var acceleration = data.acceleration;
 	    var easing = data.easing;
 	    var velocity = this.velocity;
-	    var time = window.performance.now();
-	    var delta = (time - this.prevTime) / 1000;
 	    var rollAxis = data.rollAxis;
 	    var pitchAxis = data.pitchAxis;
 	    var el = this.el;
 	    var gamepad = this.getGamepad();
-	    this.prevTime = time;
 
 	    // If data has changed or FPS is too low
 	    // we reset the velocity
-	    if (reset || delta > MAX_DELTA) {
+	    if (dt > MAX_DELTA) {
 	      velocity[rollAxis] = 0;
 	      velocity[pitchAxis] = 0;
 	      return;
 	    }
 
-	    velocity[rollAxis] -= velocity[rollAxis] * easing * delta;
-	    velocity[pitchAxis] -= velocity[pitchAxis] * easing * delta;
+	    velocity[rollAxis] -= velocity[rollAxis] * easing * dt / 1000;
+	    velocity[pitchAxis] -= velocity[pitchAxis] * easing * dt / 1000;
 
 	    var position = el.getComputedAttribute('position');
 
@@ -207,14 +183,14 @@
 	          inputX = dpad.x || this.getJoystick(0).x,
 	          inputY = dpad.y || this.getJoystick(0).y;
 	      if (Math.abs(inputX) > JOYSTICK_EPS) {
-	        velocity[pitchAxis] += inputX * acceleration * delta;
+	        velocity[pitchAxis] += inputX * acceleration * dt / 1000;
 	      }
 	      if (Math.abs(inputY) > JOYSTICK_EPS) {
-	        velocity[rollAxis] += inputY * acceleration * delta;
+	        velocity[rollAxis] += inputY * acceleration * dt / 1000;
 	      }
 	    }
 
-	    var movementVector = this.getMovementVector(delta);
+	    var movementVector = this.getMovementVector(dt);
 
 	    el.object3D.translateX(movementVector.x);
 	    el.object3D.translateY(movementVector.y);
@@ -227,35 +203,36 @@
 	    });
 	  },
 
-	  getMovementVector: function (delta) {
+	  getMovementVector: function (dt) {
 	    if (this._getMovementVector) {
-	      return this._getMovementVector(delta);
+	      return this._getMovementVector(dt);
 	    }
 
-	    var rotation = new THREE.Euler(0, 0, 0, 'YXZ');
+	    var euler = new THREE.Euler(0, 0, 0, 'YXZ'),
+	        rotation = new THREE.Vector3();
 
-	    this._getMovementVector = function (delta) {
-	      var elRotation = this.el.getAttribute('rotation');
+	    this._getMovementVector = function (dt) {
+	      rotation.copy(this.el.getComputedAttribute('rotation'));
 	      this.direction.copy(this.velocity);
-	      this.direction.multiplyScalar(delta);
-	      if (!elRotation) { return this.direction; }
-	      if (!this.data.flyEnabled) { elRotation.x = 0; }
-	      rotation.set(
-	        THREE.Math.degToRad(elRotation.x),
-	        THREE.Math.degToRad(elRotation.y),
+	      this.direction.multiplyScalar(dt / 1000);
+	      if (!rotation) { return this.direction; }
+	      if (!this.data.flyEnabled) { rotation.x = 0; }
+	      euler.set(
+	        THREE.Math.degToRad(rotation.x),
+	        THREE.Math.degToRad(rotation.y),
 	        0
 	      );
-	      this.direction.applyEuler(rotation);
+	      this.direction.applyEuler(euler);
 	      return this.direction;
 	    };
 
-	    return this._getMovementVector(delta);
+	    return this._getMovementVector(dt);
 	  },
 
 	  /*******************************************************************
 	   * Rotation
 	   */
-	  
+
 	  updateRotation: function () {
 	    if (this._updateRotation) {
 	      return this._updateRotation();
@@ -301,7 +278,7 @@
 	      if (Math.abs(lookVector.x) <= JOYSTICK_EPS) lookVector.x = 0;
 	      if (Math.abs(lookVector.y) <= JOYSTICK_EPS) lookVector.y = 0;
 	      if (this.data.invertAxisY) lookVector.y = -lookVector.y;
-	      
+
 	      // If external controls have been active more recently than gamepad,
 	      // and gamepad hasn't moved, don't overwrite the existing rotation.
 	      if (tLastExternalActivity > tLastLocalActivity && !lookVector.lengthSq()) {
@@ -383,7 +360,7 @@
 	  /**
 	   * Returns the state of the given button.
 	   * @param  {number} index The button (0-N) for which to find state.
-	   * @return {GamepadButton} 
+	   * @return {GamepadButton}
 	   */
 	  getButton: function (index) {
 	    return this.getGamepad().buttons[index];
