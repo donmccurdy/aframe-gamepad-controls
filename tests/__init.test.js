@@ -5,7 +5,7 @@
  */
 window.debug = true;
 
-var AScene = require('aframe-core').AScene;
+var AScene = require('aframe').AScene;
 
 beforeEach(function () {
 	this.sinon = sinon.sandbox.create();

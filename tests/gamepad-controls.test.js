@@ -1,8 +1,8 @@
-var Aframe = require('aframe-core');
+var AFRAME = require('aframe');
 var component = require('../gamepad-controls');
 var entityFactory = require('./helpers').entityFactory;
 
-Aframe.registerComponent('gamepad-controls', component);
+AFRAME.registerComponent('gamepad-controls', component);
 
 describe('Gamepad Controls', function () {
 
@@ -13,9 +13,7 @@ describe('Gamepad Controls', function () {
 	var GamepadButton = component.GamepadButton,
 		EPS = 1e-6;
 
-	var gamepad,
-		ctrl,
-		currentTime = 0;
+	var gamepad, ctrl;
 
 	beforeEach(function () {
 		// Mock gamepad
@@ -28,10 +26,6 @@ describe('Gamepad Controls', function () {
 			id: 'test-gamepad'
 		};
 		this.sinon.stub(navigator, 'getGamepads').returns([gamepad]);
-
-		// Mock time
-		currentTime = 0;
-		this.sinon.stub(window.performance, 'now', function () { return currentTime; });
 	});
 
 	beforeEach(function (done) {
@@ -72,28 +66,24 @@ describe('Gamepad Controls', function () {
 
 	describe('Movement', function () {
 		it('moves object up/down/right/left with stick0', function () {
-			currentTime = 100;
 			gamepad.axes = [0, 1, 0, 0];
-			ctrl.updatePosition();
+			ctrl.updatePosition(100);
 			expect(this.el.object3D.position.z).to.equal(0.65);
 
-			currentTime = 101;
 			gamepad.axes = [1, 0, 0, 0];
-			ctrl.updatePosition();
+			ctrl.updatePosition(1);
 			expect(Math.abs(this.el.object3D.position.x - 0.000065)).to.be.below(EPS);
 			expect(Math.abs(this.el.object3D.position.z - 0.65637)).to.be.below(EPS);
 		});
 
 		it('moves object up/down/right/left with dpad', function () {
-			currentTime = 100;
 			gamepad.buttons[GamepadButton.DPAD_DOWN] = {pressed: true, value: 1};
-			ctrl.updatePosition();
+			ctrl.updatePosition(100);
 			expect(this.el.object3D.position.z).to.equal(0.65);
 
-			currentTime = 101;
 			gamepad.buttons[GamepadButton.DPAD_DOWN] = {pressed: false, value: 0};
 			gamepad.buttons[GamepadButton.DPAD_RIGHT] = {pressed: true, value: 1};
-			ctrl.updatePosition();
+			ctrl.updatePosition(1);
 			expect(Math.abs(this.el.object3D.position.x - 0.000065)).to.be.below(EPS);
 			expect(Math.abs(this.el.object3D.position.z - 0.65637)).to.be.below(EPS);
 		});
@@ -130,10 +120,9 @@ describe('Gamepad Controls', function () {
 
 	describe('Movement + Rotation', function () {
 		it('moves relative to post-rotation heading', function () {
-			currentTime = 100;
 			this.el.setAttribute('rotation', {x: 0, y: 90, z: 0});
 			gamepad.buttons[GamepadButton.DPAD_DOWN] = {pressed: true, value: 1};
-			ctrl.updatePosition();
+			ctrl.updatePosition(100);
 			expect(this.el.object3D.position.z).to.be.within(-EPS, +EPS);
 			expect(Math.abs(this.el.object3D.position.x - 0.65)).to.be.below(EPS);
 		});
