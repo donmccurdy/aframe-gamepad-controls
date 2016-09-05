@@ -16,7 +16,7 @@ This component uses the HTML5 [Gamepad API](https://developer.mozilla.org/en-US/
 <html>
   <head>
     <!-- A-Frame Library -->
-    <script src="https://aframe.io/releases/latest/aframe.js"></script>
+    <script src="https://aframe.io/releases/0.3.1/aframe.min.js"></script>
 
     <!-- Component -->
     <script src="dist/aframe-gamepad-controls.js"></script>
@@ -41,7 +41,7 @@ $ npm install aframe-gamepad-controls
 Register `gamepad-controls` component.
 
 ```javascript
-var AFRAME = require('aframe-core');
+var AFRAME = require('aframe');
 var GamepadControls = require('aframe-gamepad-controls');
 AFRAME.registerComponent('gamepad-controls', GamepadControls);
 ```
@@ -56,8 +56,8 @@ Add markup.
 <a-cube gamepad-controls="lookEnabled: false"></a-cube>
 
 <!-- Two players -->
-<a-model src="player1.obj" gamepad-controls="controller: 0; lookEnabled: false"></a-model>
-<a-model src="player2.obj" gamepad-controls="controller: 1; lookEnabled: false"></a-model>
+<a-obj-model src="player1.obj" gamepad-controls="controller: 0; lookEnabled: false"></a-obj-model>
+<a-obj-model src="player2.obj" gamepad-controls="controller: 1; lookEnabled: false"></a-obj-model>
 ```
 
 ## Development
