@@ -2,7 +2,7 @@
 
 Gamepad controls for A-Frame.
 
-Demo: https://www.donmccurdy.com/aframe-gamepad-controls/
+Demo: https://donmccurdy.github.io/aframe-gamepad-controls/
 
 ## Overview
 
