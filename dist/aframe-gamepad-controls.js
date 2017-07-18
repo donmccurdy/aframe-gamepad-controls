@@ -176,7 +176,7 @@
 	    velocity[rollAxis] -= velocity[rollAxis] * easing * dt / 1000;
 	    velocity[pitchAxis] -= velocity[pitchAxis] * easing * dt / 1000;
 
-	    var position = el.getComputedAttribute('position');
+	    var position = el.getAttribute('position');
 
 	    if (data.enabled && data.movementEnabled && gamepad) {
 	      var dpad = this.getDpad(),
@@ -212,7 +212,7 @@
 	        rotation = new THREE.Vector3();
 
 	    this._getMovementVector = function (dt) {
-	      rotation.copy(this.el.getComputedAttribute('rotation'));
+	      rotation.copy(this.el.getAttribute('rotation'));
 	      this.direction.copy(this.velocity);
 	      this.direction.multiplyScalar(dt / 1000);
 	      if (!rotation) { return this.direction; }
