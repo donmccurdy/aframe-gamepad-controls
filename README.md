@@ -87,6 +87,16 @@ Example:
 </a-scene>
 ```
 
+## Gear VR
+
+A-Frame supports the Gear VR controller with `gear-vr-controller`, but for Gear VR's without a controller, this component can be used to handle it's trackpad events.
+
+For a cursor-based setup, `downEvents` must be set to `gamepadbuttondown`. For example:
+
+```html
+<a-entity cursor="downEvents: gamepadbuttondown; upEvents: gamepadbuttonup;"></a-entity>
+```
+
 ## Button Events
 
 When buttons are pressed on the gamepad, a [GamepadButtonEvent](https://github.com/donmccurdy/aframe-gamepad-controls/blob/master/lib/GamepadButtonEvent.js) is emitted on the element. Components and entities may listen for these events and modify behavior as needed. Example:
