@@ -1,5 +1,7 @@
 # A-Frame `gamepad-controls`
 
+> **NOTICE**: This project is no longer maintained. I recommend using `movement-controls` from [A-Frame Extras](https://github.com/donmccurdy/aframe-extras) instead.
+
 Gamepad controls for A-Frame.
 
 Demo: https://donmccurdy.github.io/aframe-gamepad-controls/
